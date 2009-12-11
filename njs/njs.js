@@ -1,9 +1,9 @@
 /*
  * $njs 1.0 Alpha - Javascript Toolkit
  *
- * Copyright (c) 2008 Henry Liang
+ * Copyright (c) 2010 Henry Liang
  *
- * $Date: 2010-12-10 23:20:00 -0500 (Wed, 06 Feb 2008) $
+ * $Date: 2010-12-12 03:20:00$
  *
  */
 window["undefined"]=window["undefined"];
@@ -68,6 +68,12 @@ $njs.extend($njs,
 		} else
 			for ( var value = object[0];
 				i < length && callback.call( value, i, value ) !== false; value = object[++i] ){}
+	},
+	globalId : function()
+	{
+		if(agruments.callee.gid = null)
+			agruments.callee.gid = new Date().getTime() + "" + Math.floor(Math.random() * 100000);
+		return agruments.callee.gid * 1 + 1 + "";
 	},
 	element : {},
 	array : {},
