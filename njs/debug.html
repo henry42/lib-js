@@ -3,12 +3,21 @@
  <HEAD>
   <TITLE> njs debug </TITLE>
   <SCRIPT LANGUAGE="JAVASCRIPT" SRC="njs.js"></SCRIPT>
+  <SCRIPT LANGUAGE="JAVASCRIPT" SRC="njs.template.js"></SCRIPT>
  </HEAD>
 
  <BODY>
-  <SCRIPT LANGUAGE="JavaScript">
+  <div id="clickme" onclick="alert(1)">CLICK ME</div>
+ 
+  <div id="output"></div>
+
+   <SCRIPT LANGUAGE="JavaScript">
   <!--
-	
+	var out = function(w){document.getElementById("output").innerHTML += w;};
+	var func = function(){out("<p>click is fired</p>");};
+	$njs.event.add(document.getElementById("clickme") , "click" ,func );
+	//$njs.event.trigger(document.getElementById("clickme") , "click"  );
+	//$njs.event.remove(document.getElementById("clickme") , "click" ,func );
   //-->
   </SCRIPT>
  </BODY>

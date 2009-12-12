@@ -24,21 +24,21 @@
 			}
 			if (flags == null)
 				flags = {};
-			var resultArr = [];
-			var resultOut = { write: function(m) { resultArr.push(m); } };
+			var arr = [];
+			var out = { write: function(m) { arr.push(m); } };
 			try
 			{
-				func(resultOut, context, flags);
+				func(out, context, flags);
 			} 
 			catch(e)
 			{
 				if (flags.throwExceptions == true)
 					throw e;
-				var result = new String(resultArr.join("") + "[ERROR: " + e.toString() + (e.message ? '; ' + e.message : '') + "]");
+				var result = new String(arr.join("") + "[ERROR: " + e.toString() + (e.message ? '; ' + e.message : '') + "]");
 				result["exception"] = e;
 				return result;
 			}
-			return resultArr.join("");
+			return arr.join("");
 		}
 		this.name       = tmplName;
 		this.source     = fs; 
@@ -164,7 +164,7 @@
 		}
 		if (stmt.delta < 0) {
 			if (state.stack.length <= 0)
-				throw new error(tmplName + "close tag does not match any previous statement: " + stmtStr);
+				throw new error(tmplName + " close tag does not match any previous statement: " + stmtStr);
 			state.stack.pop();
 		} 
 		if (stmt.delta > 0)
@@ -339,7 +339,7 @@
 									 "var ", iterVar, " = ", listVar, "[", iterVar, "_index];" ].join("");
 							 } },
 				"forelse" : { delta:  0, prefix: "} } if (__LENGTH_STACK__[__LENGTH_STACK__.length - 1] == 0) { if (", suffix: ") {", paramDefault: "true" },
-				"/for"    : { delta: -1, prefix: "} }; delete __LENGTH_STACK__[__LENGTH_STACK__.length - 1];" }, 
+				"/for"    : { delta: -1, prefix: "} }; __LENGTH_STACK__.length--;" }, 
 				"var"     : { delta:  0, prefix: "var ", suffix: ";" },
 				"macro"   : { delta:  1, 
 							  prefixFunc : function(stmtParts, state, tmplName, etc) {

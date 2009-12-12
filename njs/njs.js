@@ -7,42 +7,23 @@
  *
  */
 window["undefined"]=window["undefined"];
-
 var $njs = {extend : function()
 {
-	var target = arguments[0] || {}, i = 1, length = arguments.length, deep = false, options;
+	var target = arguments[0] || {}, i = 1, length = arguments.length, options;
 	
-	if ( target.constructor == Boolean )
-	{
-		deep = target;
-		target = arguments[1] || {};
-		i = 2;
-	}
 	if ( typeof target != "object" && typeof target != "function" )
 		target = {};
 	
-	if ( length == 1 )
-	{
-		target = this;
-		i = 0;
-	}
 	for ( ; i < length; i++ )
 		if ( (options = arguments[ i ]) != null )
 			for ( var name in options )
-			{
 				if ( target === options[ name ] )
 					continue;
-	
-				if ( deep && options[ name ] && typeof options[ name ] == "object" && target[ name ] && !options[ name ].nodeType )
-					target[ name ] = $njs.extend( target[ name ], options[ name ] );
-				else if(typeof options[ name ] == "function" && target[ name ] != undefined && target[ name ] != options[ name ])
+				else if( options[ name ] != undefined )
 				{
-					var f = target[ name ];
 					target[ name ] = options[ name ];
 				}
-				else if ( options[ name ] != undefined )
-					target[ name ] = options[ name ];
-			}
+			
 	return target;
 }};
 
@@ -57,6 +38,61 @@ $njs.browser =
 //
 $njs.extend($njs,
 {
+	_expand : "$njs" + (+new Date),
+	_winObj : {},
+	gid : 1,
+	cache: {},
+	data: function( elem, name, data ) {
+		elem = elem == window ?
+			$njs["_winObj"]:
+			elem;
+
+		var id = elem[ $njs["_expand"] ];
+
+		if ( !id )
+			id = elem[ $njs["_expand"] ] = $njs.globalId();
+
+		if ( name && !$njs.cache[ id ] )
+			$njs.cache[ id ] = {};
+
+		if ( data !== undefined )
+			$njs.cache[ id ][ name ] = data;
+
+		return name ?
+			$njs.cache[ id ][ name ] :
+			id;
+	},
+	removeData: function( elem, name ) {
+		elem = elem == window ?
+			$njs["_winObj"]:
+			elem;
+
+		var id = elem[ $njs["_expand"] ];
+
+		if ( name ) {
+			if ( $njs.cache[ id ] )
+			{
+				delete $njs.cache[ id ][ name ];
+
+				name = "";
+
+				for ( name in $njs.cache[ id ] )
+					break;
+
+				if ( !name )
+					$njs.removeData( elem );
+			}
+		} else {
+			try 
+			{
+				delete elem[ $njs["_expand"] ];
+			} catch(e){
+				if ( elem.removeAttribute )
+					elem.removeAttribute( $njs["_expand"] );
+			}
+			delete $njs.cache[ id ];
+		}
+	},
 	each : function( object, callback )
 	{
 		var name, i = 0, length = object.length;
@@ -71,16 +107,14 @@ $njs.extend($njs,
 	},
 	globalId : function()
 	{
-		if(agruments.callee.gid = null)
-			agruments.callee.gid = new Date().getTime() + "" + Math.floor(Math.random() * 100000);
-		return agruments.callee.gid * 1 + 1 + "";
-	},
-	element : {},
-	array : {},
-	event : {},
-	ajax : {}
+		return $njs.gid++;
+	}
 });
-$njs.extend($njs.element,
+/*
+	$njs element
+*/
+(function(){
+$njs.extend($njs.element = {},
 {
 	addClass : function(ele,name)
 	{
@@ -234,9 +268,20 @@ $njs.extend($njs.element,
 		left += e.offsetLeft;    
 		top += e.offsetTop;    
 		return {x:left, y:top} ;
+	},
+	nodeName : function(elem , name)
+	{
+		return elem.nodeName && elem.nodeName.toUpperCase() == name.toUpperCase();
 	}
 });
-$njs.extend($njs.array,
+})();
+
+/*
+	$njs array
+*/
+
+(function(){
+$njs.extend($njs.array = {},
 {
 	unique : function( array )
 	{
@@ -262,8 +307,16 @@ $njs.extend($njs.array,
 		return -1;
 	}
 });
-$njs.extend($njs.event,
+})();
+
+/*
+	$njs event
+*/
+
+(function(){
+$njs.extend($njs.event = {},
 {
+	native : ("blur,focus,load,resize,scroll,unload,click,dblclick," + "mousedown,mouseup,mousemove,mouseover,mouseout,mouseenter,mouseleave," + "change,select,submit,keydown,keypress,keyup,error").split(","),
 	offset : function(ev)
 	{
 		if(ev.pageX || ev.pageY)
@@ -272,9 +325,138 @@ $njs.extend($njs.event,
 		}
 		return { x:ev.clientX + Math.max(document.body.scrollLeft,document.documentElement.scrollLeft) - Math.max(document.body.clientLeft,document.documentElement.clientLeft) , 
 			y:ev.clientY + Math.max(document.body.scrollTop,document.documentElement.scrollTop) - Math.max(document.body.clientTop,document.documentElement.clientTop) }; 
+	},
+	preventDefault : function(ev)
+	{
+		ev = ev || arguments.callee.caller.agruments[0] || window.event;
+		if(ev.preventDefault)
+			ev.preventDefault();
+		ev.returnValue = false;
+	},
+	stopPropagation : function(ev)
+	{
+		ev = ev || arguments.callee.caller.agruments[0] || window.event;
+		if(ev.stopPropagation)
+			ev.stopPropagation();
+		ev.cancelBubble = true;
+	},
+	handle : function(ev)
+	{
+		var type = typeof ev == "string" ? ev : (ev || window.event).type;
+		var handlers =  arguments[0] =( $njs.data(this, "events") || {} )[type];
+
+		if(handlers)
+		{
+			for(var i = 0 , len = handlers.length ; i < len ; i++)
+			{
+				var ret = handlers[i].apply(this, arguments);
+				if ( ret === false )
+				{
+					$njs.event.preventDefault(ev);
+					$njs.event.stopPropagation(ev);
+				}
+			}
+		}
+	},
+	add: function(elem, type, handler)
+	{
+		if ( elem.nodeType == 3 || elem.nodeType == 8 )
+			return;
+		if ( elem.setInterval && elem != window )
+			elem = window;
+		var events = $njs.data(elem, "events") || $njs.data(elem, "events", {}),
+			handle = $njs.data(elem, "handle") || $njs.data(elem, "handle", function(){
+				return !$njs.event.triggered ? $njs.event.handle.apply(arguments.callee.elem, arguments) : undefined;
+			});
+		handle.elem = elem;
+
+		var handlers = events[type];
+
+		if (!handlers)
+		{
+			handlers = events[type] = [];
+			if($njs.array.inArray(this.native,type) != -1)
+				if (elem.addEventListener)
+					elem.addEventListener(type, handle, false);
+				else if (elem.attachEvent)
+					elem.attachEvent("on" + type, handle);
+
+		}
+		handlers.push(handler);
+	},
+	remove : function(elem ,type , handler)
+	{
+		if ( elem.nodeType == 3 || elem.nodeType == 8 )
+			return;
+		var events = $njs.data(elem, "events") ;
+		if( events )
+		{
+			if(type == undefined)
+			{
+				for(var type in events)
+					this.remove(elem , type);
+			}
+			else
+			{
+				var handles = events[type] , name;
+				var ind;
+				if(handler)
+					while( ( ind = $njs.array.inArray(handles , handler)) != -1 )
+					{
+						handles.splice(ind,1);
+					}
+				else
+					handles = [];
+				if( handles.length == 0 )
+				{
+					if($njs.array.inArray(this.native,type) != -1)
+						if (elem.removeEventListener)
+							elem.removeEventListener(type, $njs.data(elem, "handle"), false);
+						else if (elem.detachEvent)
+							elem.detachEvent("on" + type, $njs.data(elem, "handle"));
+					delete events[type];
+				}
+				for ( name in events ) break;
+				if ( !name )
+				{
+					var handle = $njs.data( elem, "handle" );
+					if ( handle ) handle.elem = null;
+					$njs.removeData( elem, "events" );
+					$njs.removeData( elem, "handle" );
+				}
+			}
+		}
+	},
+	trigger : function( elem , type , data )
+	{
+		var handle = $njs.data(elem, "handle");
+		if ( handle )
+			handle.call( elem, type ,data );
+
+		if ( (!elem[type] || ( $njs.element.nodeName(elem, 'a') && type == "click" )) && elem["on"+type] && elem["on"+type].apply( elem, data ) === false )
+			;
+		if ( elem[type] && !( $njs.element.nodeName(elem, 'a') && type == "click") ) 
+		{
+			this.triggered = true;
+			try {
+				elem[ type ]();
+			} catch (e) {}
+			this.triggered = false;
+		}
 	}
-})
-$njs.extend($njs.ajax,
+});
+$njs.event.add( window , 'unload', function(){ 
+	for ( var id in $njs.cache )
+		if ( id != 1 && $njs.cache[ id ].handle )
+			$njs.event.remove( $njs.cache[ id ].handle.elem );
+}); 
+})();
+
+/*
+	$njs ajax
+*/
+
+$njs.extend($njs.ajax = {},
 {
 	httpSuccess : function(r)
 	{
