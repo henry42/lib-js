@@ -105,6 +105,10 @@ $njs.extend($njs,
 			for ( var value = object[0];
 				i < length && callback.call( value, i, value ) !== false; value = object[++i] ){}
 	},
+	trim : function(text)
+	{
+		return (text || "").replace(/^\s+/, "").replace(/\s+$/,""); 
+	},
 	globalId : function()
 	{
 		return $njs.gid++;
@@ -190,8 +194,8 @@ $njs.extend($njs.element = {},
 				var padding = 0, border = 0;
 				$njs.each( which, function(a) 
 				{
-					padding += parseFloat(JSNative.css( ele, "padding" + a)) || 0;
-					border += parseFloat(JSNative.css( ele, "border" + a + "Width")) || 0;
+					padding += parseFloat($njs.element.css( ele, "padding" + a)) || 0;
+					border += parseFloat($njs.element.css( ele, "border" + a + "Width")) || 0;
 				});
 				val -= Math.round(padding + border);
 			}
@@ -241,7 +245,7 @@ $njs.extend($njs.element = {},
 					(parseFloat( ele.filter.match(/opacity=([^)]*)/)[1] ) / 100) + '':
 					"";
 			}
-			else if ( JSNative.browser.mozilla )
+			else if ( $njs.browser.mozilla )
 			{
 				name = "MozOpacity";
 			}
@@ -250,10 +254,6 @@ $njs.extend($njs.element = {},
 			ele[name] = value;
 		return ele[name];
 		
-	},
-	trim : function(text)
-	{
-		return (text || "").replace(/^\s+/, "").replace(/\s+$/,""); 
 	},
 	offset : function(e,p)
 	{
@@ -305,6 +305,25 @@ $njs.extend($njs.array = {},
 			if(arr[i] == e)
 				return i;
 		return -1;
+	},
+	copy : function()
+	{
+		var ind = -1 , len = arguments.length , pos , target = arguments[len - 1] ;
+		if(typeof arguments[len - 1] == "number")
+		{
+			var source = [target , 0];
+			target = arguments[--len - 1];
+			while(++ind < len - 1)
+				arguments.callee( arguments[ind] , source );
+			Array.prototype.splice.apply( target , source );
+		}
+		else
+		{
+			while(++ind < len - 1)
+				Array.prototype.push.apply( target , arguments[ind] );
+		}
+		
+		return target;
 	}
 });
 })();
@@ -316,7 +335,7 @@ $njs.extend($njs.array = {},
 (function(){
 $njs.extend($njs.event = {},
 {
-	native : ("blur,focus,load,resize,scroll,unload,click,dblclick," + "mousedown,mouseup,mousemove,mouseover,mouseout,mouseenter,mouseleave," + "change,select,submit,keydown,keypress,keyup,error").split(","),
+	native : ("blur,focus,load,resize,scroll,unload,click,dblclick,mousedown,mouseup,mousemove,mouseover,mouseout,mouseenter,mouseleave,change,select,submit,keydown,keypress,keyup,error").split(","),
 	offset : function(ev)
 	{
 		if(ev.pageX || ev.pageY)
@@ -328,14 +347,14 @@ $njs.extend($njs.event = {},
 	},
 	preventDefault : function(ev)
 	{
-		ev = ev || arguments.callee.caller.agruments[0] || window.event;
+		ev = ev || window.event;
 		if(ev.preventDefault)
 			ev.preventDefault();
 		ev.returnValue = false;
 	},
 	stopPropagation : function(ev)
 	{
-		ev = ev || arguments.callee.caller.agruments[0] || window.event;
+		ev = ev || window.event;
 		if(ev.stopPropagation)
 			ev.stopPropagation();
 		ev.cancelBubble = true;
@@ -358,7 +377,7 @@ $njs.extend($njs.event = {},
 			}
 		}
 	},
-	add: function(elem, type, handler)
+	bind: function(elem, type, handler)
 	{
 		if ( elem.nodeType == 3 || elem.nodeType == 8 )
 			return;
@@ -445,7 +464,8 @@ $njs.extend($njs.event = {},
 		}
 	}
 });
-$njs.event.add( window , 'unload', function(){ 
+$njs.event.bind( window , 'unload', function()
+{ 
 	for ( var id in $njs.cache )
 		if ( id != 1 && $njs.cache[ id ].handle )
 			$njs.event.remove( $njs.cache[ id ].handle.elem );
@@ -483,7 +503,7 @@ $njs.extend($njs.ajax = {},
 			if(xhr.readyState == 4)
 			{
 				
-				if(JSNative.httpSuccess(xhr))
+				if($njs.ajax.httpSuccess(xhr))
 				{
 					obj.complete.call(window,"success",xhr);
 				}

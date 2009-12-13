@@ -2,20 +2,36 @@
 <HTML>
  <HEAD>
   <TITLE> njs debug </TITLE>
+  <SCRIPT LANGUAGE="JavaScript">
+  <!--
+	var LOG = function()
+	{
+		document.getElementById("output").innerHTML += $njs.array.copy(arguments,["<p style=\"margin:-1px;\">","</p>"],1).join("");
+	}
+  //-->
+  </SCRIPT>
   <SCRIPT LANGUAGE="JAVASCRIPT" SRC="njs.js"></SCRIPT>
   <SCRIPT LANGUAGE="JAVASCRIPT" SRC="njs.template.js"></SCRIPT>
  </HEAD>
 
  <BODY>
-  <div id="clickme" onclick="alert(1)">CLICK ME</div>
+<pre>
+\[(?:[^"']*?|(?:(["'])(?:[^\1\\]*?|\\u.{4}|\\x.{2}|\\[^ux])*?\1))+?\]
+\[([^"']+?|((["'])([^\3\\]*?|\\u.{4}|\\x.{2}|\\[^ux])*?\3))+?\]
+\[([^"']+?|"[^"]*?")+?\]
+"([^"\\]*?|\\u.{4}|\\x.{2}|\\[^ux])*?"
+(["'])([^\1\\]*?|\\u.{4}|\\x.{2}|\\[^ux])*?\1
+</pre>
+  <div id="clickme" onclick="LOG('native click is fired');">CLICK ME</div>
  
-  <div id="output"></div>
+  <div id="output" style="border:1px solid red;width:100%;margin-top:10px;font-family:Verdana"></div>
 
    <SCRIPT LANGUAGE="JavaScript">
   <!--
-	var out = function(w){document.getElementById("output").innerHTML += w;};
-	var func = function(){out("<p>click is fired</p>");};
-	$njs.event.add(document.getElementById("clickme") , "click" ,func );
+	var template = 'dsd${dssss}dsadas';
+	var tp = $njs.template.parse(template);
+	var func = function(){LOG("click is fired");};
+	$njs.event.bind(document.getElementById("clickme") , "click" ,func );
 	//$njs.event.trigger(document.getElementById("clickme") , "click"  );
 	//$njs.event.remove(document.getElementById("clickme") , "click" ,func );
   //-->

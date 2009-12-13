@@ -55,33 +55,23 @@
 			{
 				if(c == "\\")
 				{
-					end++;
-					continue;
-				}else if(sS == c)
-				{
+					if(body.charAt(end + 1) == "u")
+						end = end + 5;
+					else if(body.charAt(end + 1) == "x")
+						end = end + 3;
+					else
+						end = end + 1;
+						
+				}
+				else if(sS == c)
 					sS = "";
-					continue;
-				}
-				else
-				{
-					;
-				}
 			}
 			else
 			{
 				if(c == "\"" || c == "'")
-				{
 					sS = c;
-					continue;
-				}
 				else if(c == ch && body.substr(end,length).indexOf(delimiter) == 0)
-				{
 					return end;
-				}
-				else
-				{
-					;
-				}
 			}
 		}
 		return -1;
@@ -323,7 +313,7 @@
 				"for"    : { delta:  1, paramMin: 3, 
 							 prefixFunc : function(stmtParts, state, tmplName, etc) {
 								if (stmtParts[2] != "in")
-									throw new etc.ParseError(tmplName, state.line, "bad for loop statement: " + stmtParts.join(' '));
+									throw new error(tmplName, state.line, "bad for loop statement: " + stmtParts.join(' '));
 								var iterVar = stmtParts[1];
 								var listVar = "__LIST__" + iterVar;
 								return [ "var ", listVar, " = ", stmtParts[3], ";",
