@@ -272,6 +272,19 @@ $njs.extend($njs.element = {},
 	nodeName : function(elem , name)
 	{
 		return elem.nodeName && elem.nodeName.toUpperCase() == name.toUpperCase();
+	},
+	/*
+		const unsigned short      DOCUMENT_POSITION_DISCONNECTED = 0x01;
+		const unsigned short      DOCUMENT_POSITION_PRECEDING    = 0x02;
+		const unsigned short      DOCUMENT_POSITION_FOLLOWING    = 0x04;
+		const unsigned short      DOCUMENT_POSITION_CONTAINS     = 0x08;
+		const unsigned short      DOCUMENT_POSITION_CONTAINED_BY = 0x10;
+		const unsigned short      DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC = 0x20;
+	*/
+	compareDocumentPosition : function(a,b)
+	{
+		return a.compareDocumentPosition ? a.compareDocumentPosition(b) :
+			a.contains ? ( a != b && a.contains(b) && 16 ) + ( a != b && b.contains(a) && 8 ) + ( a.sourceIndex >= 0 && b.sourceIndex >= 0 ? (a.sourceIndex < b.sourceIndex && 4 ) +(a.sourceIndex > b.sourceIndex && 2 ) :1 ) : 0;
 	}
 });
 })();
@@ -335,7 +348,7 @@ $njs.extend($njs.array = {},
 (function(){
 $njs.extend($njs.event = {},
 {
-	native : ("blur,focus,load,resize,scroll,unload,click,dblclick,mousedown,mouseup,mousemove,mouseover,mouseout,mouseenter,mouseleave,change,select,submit,keydown,keypress,keyup,error").split(","),
+	_native : ("blur,focus,load,resize,scroll,unload,click,dblclick,mousedown,mouseup,mousemove,mouseover,mouseout,mouseenter,mouseleave,change,select,submit,keydown,keypress,keyup,error").split(","),
 	offset : function(ev)
 	{
 		if(ev.pageX || ev.pageY)
@@ -394,7 +407,7 @@ $njs.extend($njs.event = {},
 		if (!handlers)
 		{
 			handlers = events[type] = [];
-			if($njs.array.inArray(this.native,type) != -1)
+			if($njs.array.inArray(this._native,type) != -1)
 				if (elem.addEventListener)
 					elem.addEventListener(type, handle, false);
 				else if (elem.attachEvent)
@@ -428,7 +441,7 @@ $njs.extend($njs.event = {},
 					handles = [];
 				if( handles.length == 0 )
 				{
-					if($njs.array.inArray(this.native,type) != -1)
+					if($njs.array.inArray(this._native,type) != -1)
 						if (elem.removeEventListener)
 							elem.removeEventListener(type, $njs.data(elem, "handle"), false);
 						else if (elem.detachEvent)

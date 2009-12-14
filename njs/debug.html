@@ -2,16 +2,17 @@
 <HTML>
  <HEAD>
   <TITLE> njs debug </TITLE>
-  <SCRIPT TYPE="text/javascript" SRC="njs.js"></SCRIPT>
-  <SCRIPT TYPE="text/javascript" SRC="njs.template.js"></SCRIPT>
-  <SCRIPT LANGUAGE="JavaScript">
+  <script type="text/javascript" src="njs.js"></script>
+  <script type="text/javascript" src="njs.template.js"></script>
+  <script type="text/javascript">
   <!--
+  
 	var LOG = function()
 	{
 		document.getElementById("output").innerHTML += $njs.array.copy(arguments,["<p style=\"margin:-1px;\">","</p>"],1).join("");
 	}
   //-->
-  </SCRIPT>
+  </script>
  </HEAD>
 
  <BODY style="font-family:'Courier New'">
@@ -30,17 +31,17 @@
   <div id="output" style="border:1px solid red;width:100%;margin-top:10px;font-family:Verdana"></div>
 
    <SCRIPT LANGUAGE="JavaScript">
-	var template = 'dsd[d"ss"s"s\"s"ss]dsadas';
+	var template = '[dssss"s""s\'\\""]dsadas';
 	//var regex = /\[(?:[^"']*?|(?:(["'])(?:[^\1]*?|\\u.{4}|\\x.{2}|\\[^ux])*?\1))+?\]/;
 	//var regex = /\[(?:[^"']*?|(?:(["'])(?:[^"']*?|\\[^ux]|\\u.{4}|\\x.{2})*?["']))*?\]/g;
 	//var regex = /\[([^"']*?|(["'](\\u.{4}|\\x.{2}|\\[^ux]|[^"'])*?["']))*?\]/;
-	var regex = /\[(?:[^"']*?|"(?:[^"\\]*|\\[^ux]|\\u\S{4}|\\x\S{2}|\\[^ux ])*"|'(?:[^'\\]*|\\[^ux]|\\u\S{4}|\\x\S{2}|\\[^ux ])*')*?\]/;
-
-	alert( arr = regex.exec(template));
+	var regex = /\[(?:[^"'\]]*|"(?:[^"\\]*|\\[^ux]|\\u\S{4}|\\x\S{2})*"|'(?:[^'\\]*|\\[^ux]|\\u\S{4}|\\x\S{2})*')*\]/;
+	alert(template.match(regex));
+	//alert( arr = regex.exec(template));
 	
-	var tp = $njs.template.parse(template);
-	var func = function(){LOG("click is fired");};
-	$njs.event.bind(document.getElementById("clickme") , "click" ,func );
+	//var tp = $njs.template.parse(template);
+	//var func = function(){LOG("click is fired");};
+	//$njs.event.bind(document.getElementById("clickme") , "click" ,func );
 	//$njs.event.trigger(document.getElementById("clickme") , "click"  );
 	//$njs.event.remove(document.getElementById("clickme") , "click" ,func );
   </SCRIPT>
