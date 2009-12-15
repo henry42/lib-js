@@ -298,19 +298,20 @@ $njs.extend($njs.array = {},
 {
 	unique : function( array )
 	{
-		var ret = [], done = {};
-
-		for ( var i = 0, length = array.length; i < length; i++ ) 
+		var ret = [];
+		for(var i = 0 ; i < array.length ; i++)
 		{
-			if ( !done[ array[ i ] ] ) 
-			{
-				done[ array[ i ] ] = true;
-				ret.push( array[ i ] );
-			}
+			var b = false;
+			for(var j = 0 ; j < ret.length ; j++)
+				if(ret[j] == array[i])
+				{
+					b = true;
+					break;
+				}
+			if(!b)
+				ret.push(array[i]);
 		}
-
 		return ret;
-
 	},
 	inArray : function( arr , e )
 	{
@@ -333,7 +334,7 @@ $njs.extend($njs.array = {},
 		else
 		{
 			while(++ind < len - 1)
-				Array.prototype.push.apply( target , arguments[ind] );
+				Array.prototype.push.apply( target , Array.prototype.slice.call(arguments[ind]) );
 		}
 		
 		return target;

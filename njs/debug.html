@@ -4,9 +4,9 @@
   <TITLE> njs debug </TITLE>
   <script type="text/javascript" src="njs.js"></script>
   <script type="text/javascript" src="njs.template.js"></script>
+  <script type="text/javascript" src="njs.selector.js"></script>
   <script type="text/javascript">
   <!--
-  
 	var LOG = function()
 	{
 		document.getElementById("output").innerHTML += $njs.array.copy(arguments,["<p style=\"margin:-1px;\">","</p>"],1).join("");
@@ -38,12 +38,12 @@
 	var regex = /\[(?:[^"'\]]*|"(?:[^"\\]*|\\[^ux]|\\u\S{4}|\\x\S{2})*"|'(?:[^'\\]*|\\[^ux]|\\u\S{4}|\\x\S{2})*')*\]/;
 	alert(template.match(regex));
 	//alert( arr = regex.exec(template));
-	
 	//var tp = $njs.template.parse(template);
 	//var func = function(){LOG("click is fired");};
 	//$njs.event.bind(document.getElementById("clickme") , "click" ,func );
 	//$njs.event.trigger(document.getElementById("clickme") , "click"  );
 	//$njs.event.remove(document.getElementById("clickme") , "click" ,func );
+	//alert($njs.element.find("div").length);
   </SCRIPT>
  </BODY>
 </HTML>
