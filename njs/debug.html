@@ -2,9 +2,6 @@
 <HTML>
  <HEAD>
   <TITLE> njs debug </TITLE>
-  <script type="text/javascript" src="njs.js"></script>
-  <script type="text/javascript" src="njs.template.js"></script>
-  <script type="text/javascript" src="njs.selector.js"></script>
   <script type="text/javascript">
   <!--
 	var LOG = function()
@@ -13,6 +10,10 @@
 	}
   //-->
   </script>
+  <script type="text/javascript" src="njs.js"></script>
+  <script type="text/javascript" src="njs.template.js"></script>
+  <script type="text/javascript" src="njs.selector.js"></script>
+
  </HEAD>
 
  <BODY style="font-family:'Courier New'">
@@ -27,7 +28,7 @@
 \[(?:[^"']*?|(?:(["'])(?:[^"'\\]*|\\[^ux]|\\u.{4}|\\x.{2}|\\[^ux])*?["']))*?\]
 </pre>
   <div id="clickme" onclick="LOG('native click is fired');">CLICK ME</div>
-  <div id="output" style="border:1px solid red;width:100%;margin-top:10px;font-family:Verdana"></div>
+  <pre id="output" style="border:1px solid red;width:100%;margin-top:10px;font-family:Verdana"></pre>
 
    <SCRIPT LANGUAGE="JavaScript">
 	var template = '[dssss"s""s\'\\""]dsadas';
@@ -48,6 +49,7 @@
 	//$njs.event.trigger(document.getElementById("clickme") , "click"  );
 	//$njs.event.remove(document.getElementById("clickme") , "click" ,func );
 	//alert($njs.element.find("div").length);
+	 new $njs.element.Selector("a>b >c> d>e a[name=he][name=\"hel\"][ name = hello ][ name ='ssss' ] a.class.class E:nth-child(n):nth-last-child(n):nth-of-type(n):nth-last-of-type(n):root:first-child:last-child:first-of-type:last-of-type:only-child:only-of-type:empty:link:visited:active:hover:focus:target:enabled:disabled:checked")//.find();
   </SCRIPT>
  </BODY>
 </HTML>

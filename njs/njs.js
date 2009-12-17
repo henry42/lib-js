@@ -320,13 +320,13 @@ $njs.extend($njs,
 			else
 			{
 				var c = a;
-				while((c = c.nextSibling) && c != b){}
+				while((c = c.previousSibling) && c != b){}
 				if(c == b)
-					return 4;
-				var c = b;
-				while((c = c.nextSibling) && c != a){}
-				if(c == a)
 					return 2;
+				c = b;
+				while((c = c.previousSibling) && c != a){}
+				if(c == a)
+					return 4;
 				return 1;
 			}
 			return 0;
@@ -378,16 +378,9 @@ $njs.extend($njs,
                 Array.prototype.splice.apply(target, source);
             }
             else 
-            {
                 while (++ind < len - 1)
-				{
 					for(var i = 0 , l = arguments[ind].length ; i < l ; i++)
-					{
 						target.push(arguments[ind][i]);
-					}
-				}
-            }
-            
             return target;
         }
     });

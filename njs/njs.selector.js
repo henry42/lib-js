@@ -13,7 +13,7 @@
     {
         "id": new RegExp("^#(" + chars + "+)"),
         "element": new RegExp("^(?:(?:\\s*(>)\\s*)|\\s+)(" + chars + "+)?"),
-        "attr": /^(\[)\s*([\w-]+) *([~^$*|]=)?\s*(.*?)\]/,
+        "attr": /^\[\s*([\w-]+) *([~^$*|]?=)? *("?'?)([^\s]*?)(\3)\s*\]/,
         "class": new RegExp("^\\.(" + chars + "+)"),
         /*
          E:nth-child(n)
@@ -249,34 +249,51 @@
     
     var Selector = function(selector)
     {
-        this.selector = selector;
+       
+		this.cache = [];
+		this.initialize = function(s)
+		{
+			this.selector = $njs.trim(s);
+			this.cache.length = 0;
+			var last, a = " " + this.selector;
+
+			LOG("selector:","\t",$njs.trim(s));
+			do 
+			{
+				last = a;
+				for (var n in parse) 
+					if (arr = parse[n].exec(a)) 
+					{
+						LOG("op:","\t",arr[0] , "\t\t\t\t\t\t" + arr.slice(1).join("|"));
+						this.cache.push({"op" : n , "da" : arr});
+						a = a.substr(arr[0].length);
+					}
+			}
+			while (last != a)
+			if($njs.trim(a).length > 0)
+				throw "unknown path : " + a;
+			 
+		}
         this.find = function(root)
         {
-           // console.info(selector);
             if (!root) 
                 root = [document];
             else 
                 if (!root.length) 
                     root = [root];
             var arr, last, a = " " + this.selector;
-            do 
-            {
-                last = a;
-                for (var n in parse) 
-                    if (arr = parse[n].exec(a)) 
-                    {
-                        //console.info(arr[0], n);
-                        a = a.substr(arr[0].length);
-                        parse_f[n](arr, root);
-                    }
-            }
-            while (last != a) //&& root.length > 0
+
+			for(var i = 0 , len = this.cache.length ; i < len && root.length > 0 ; i++)
+				parse_f[this.cache[i]["op"]](this.cache[i]["da"], root);
             return root;
         }
+		if(selector)
+			this.initialize(selector);
     }
+
+	$njs.element.Selector = Selector;
     $njs.element.find = function(a, b)
     {
         return new Selector(a).find(b);
     }
-    new Selector("a>b >c> d>e a[name=he][name=\"hel\"][ name = hello ] a.class.class E:nth-child(n):nth-last-child(n):nth-of-type(n):nth-last-of-type(n):root:first-child:last-child:first-of-type:last-of-type:only-child:only-of-type:empty:link:visited:active:hover:focus:target:enabled:disabled:checked").find();
 })();
