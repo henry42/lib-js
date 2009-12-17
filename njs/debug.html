@@ -27,7 +27,6 @@
 \[(?:[^"']*?|(?:(["'])(?:[^"'\\]*|\\[^ux]|\\u.{4}|\\x.{2}|\\[^ux])*?["']))*?\]
 </pre>
   <div id="clickme" onclick="LOG('native click is fired');">CLICK ME</div>
- 
   <div id="output" style="border:1px solid red;width:100%;margin-top:10px;font-family:Verdana"></div>
 
    <SCRIPT LANGUAGE="JavaScript">
@@ -36,7 +35,12 @@
 	//var regex = /\[(?:[^"']*?|(?:(["'])(?:[^"']*?|\\[^ux]|\\u.{4}|\\x.{2})*?["']))*?\]/g;
 	//var regex = /\[([^"']*?|(["'](\\u.{4}|\\x.{2}|\\[^ux]|[^"'])*?["']))*?\]/;
 	var regex = /\[(?:[^"'\]]*|"(?:[^"\\]*|\\[^ux]|\\u\S{4}|\\x\S{2})*"|'(?:[^'\\]*|\\[^ux]|\\u\S{4}|\\x\S{2})*')*\]/;
-	alert(template.match(regex));
+	//alert(template.match(regex));
+	LOG("clickme" , "output" , $njs.element.compareDocumentPosition(document.getElementById("clickme"),document.getElementById("output")));
+	LOG("document" , "output" , $njs.element.compareDocumentPosition(document,document.getElementById("output")));
+	LOG("documentbody" , "output" , $njs.element.compareDocumentPosition(document.body,document.getElementById("output")));
+	LOG("output" , "output" , $njs.element.compareDocumentPosition(document.getElementById("output" ),document.getElementById("output")));
+	//alert($njs.element.compareDocumentPosition(document.getElementById("clickme"),document.getElementById("output")));
 	//alert( arr = regex.exec(template));
 	//var tp = $njs.template.parse(template);
 	//var func = function(){LOG("click is fired");};
