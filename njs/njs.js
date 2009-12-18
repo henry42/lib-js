@@ -164,22 +164,6 @@ $njs.extend($njs,
                 for (var i = 1; i < arguments.length; i++) 
                     arguments.callee(ele, arguments[i]);
         },
-        addEvent: function(elem, type, handle)
-        {
-            if (elem.addEventListener) 
-                elem.addEventListener(type, handle, false);
-            else 
-                if (elem.attachEvent) 
-                    elem.attachEvent("on" + type, handle);
-        },
-        removeEvent: function(elem, type, handle)
-        {
-            if (elem.removeEventListener) 
-                elem.removeEventListener(type, handle, false);
-            else 
-                if (elem.detachEvent) 
-                    elem.detachEvent("on" + type, handle);
-        },
         swap: function(elem, options, callback)
         {
             var old = {};
