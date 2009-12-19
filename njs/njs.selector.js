@@ -12,7 +12,6 @@
     var parse = 
     {
         "id": new RegExp("^#(" + chars + "+)"),
-        "element": new RegExp("^(?:(?:\\s*(>)\\s*)|\\s+)(" + chars + "+)?"),
         "attr": /^\[\s*([\w-]+) *([~^$*|]?=)? *("?'?)([^\s]*?)(\3)\s*\]/,
         "class": new RegExp("^\\.(" + chars + "+)"),
         /*
@@ -22,6 +21,10 @@
          E:nth-last-of-type(n)
          */
         "pseudo$child": new RegExp("^:(nth-(?:last-)?(?:child|of-type))\\([^\\)]\\)"),
+		/*
+		 E:not()
+		*/
+		"not" : /^:not\(([^()]*(\([^()]+\)[^()]*)*)\)/,
         /*
          E:root
          E:first-child
@@ -31,12 +34,7 @@
          E:only-child
          E:only-of-type
          E:empty
-         E:link
-         E:visited
-         E:active
-         E:hover
-         E:focus
-         E:target
+        
          E:enabled
          E:disabled
          E:checked
@@ -44,8 +42,15 @@
          not support
          
          E:lang(fr)
+		 E:link
+         E:visited
+         E:active
+         E:hover
+         E:focus
+         E:target
          */
-        "pseudo$normal": null
+        "pseudo$normal": null,
+		"element": new RegExp("^(?:\\s+|\\s*(>)\\s*)(" + chars + "+)?"),
     }
     var parse_f = 
     {
@@ -247,15 +252,15 @@
         parse["pseudo$normal"] = new RegExp("^:(" + r.join("|") + ")");
     })();
     
-    var Selector = function(selector)
+    var Selector = function(selector , startsFromSelf)
     {
        
 		this.cache = [];
-		this.initialize = function(s)
+		this.initialize = function(s , sfs)
 		{
 			this.selector = $njs.trim(s);
 			this.cache.length = 0;
-			var last, a = " " + this.selector;
+			var last, a = (sfs ? "" : " ") + this.selector;
 
 			LOG("selector:","\t",$njs.trim(s));
 			do 
@@ -264,14 +269,18 @@
 				for (var n in parse) 
 					if (arr = parse[n].exec(a)) 
 					{
-						LOG("op:","\t",arr[0] , "\t\t\t\t\t\t" + arr.slice(1).join("|"));
-						this.cache.push({"op" : n , "da" : arr});
+						console.info(arr);
 						a = a.substr(arr[0].length);
+						LOG("op:","\t",n , "\t\t\t\t\t\t" + arr.slice().join("|"));
+						if(n != "not")
+							this.cache.push({"op" : n , "da" : arr});
+						else
+							this.cache.push({"op" : n , "selector" : new Selector(arr[1] ,true)});
 					}
 			}
 			while (last != a)
 			if($njs.trim(a).length > 0)
-				throw "unknown path : " + a;
+				throw "unknown path :" + a;
 			 
 		}
         this.find = function(root)
@@ -284,11 +293,18 @@
             var arr, last, a = " " + this.selector;
 
 			for(var i = 0 , len = this.cache.length ; i < len && root.length > 0 ; i++)
-				parse_f[this.cache[i]["op"]](this.cache[i]["da"], root);
+			{
+				if(!this.cache[i]["selector"])
+					parse_f[this.cache[i]["op"]](this.cache[i]["da"], root);
+				else
+					for(var j = 0 ; j < root.length ; j++)
+						if(this.cache[i]["selector"].find(root[j]).length == 0)
+							root.splice(j--,1);
+			}
             return root;
         }
 		if(selector)
-			this.initialize(selector);
+			this.initialize(selector , startsFromSelf);
     }
 
 	$njs.element.Selector = Selector;

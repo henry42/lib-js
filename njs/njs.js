@@ -108,9 +108,7 @@ $njs.extend($njs,
                     break;
         }
         else 
-            for (var value = object[0]; i < length && callback.call(value, i, value) !== false; value = object[++i]) 
-            {
-            }
+            for (var value = object[0]; i < length && callback.call(value, i, value) !== false; value = object[++i]) {}
     },
     trim: function(text)
     {
@@ -221,18 +219,10 @@ $njs.extend($njs,
                 case "class":
                     name = "className";
                 default:
-                    ;            }
+                    ;            
+			}
             
-            //tag
-            if (ele.tagName) 
-            {
-                if (value) 
-                    ele[name] = value;
-                return ele[name];
-            }
-            
-            //style
-            if (name == "opacity") 
+            if (ele.tagName && name == "opacity") 
             {
             
                 if ($njs.browser.msie) 
@@ -418,8 +408,8 @@ $njs.extend($njs,
                     var ret = handlers[i].apply(this, arguments);
                     if (ret === false) 
                     {
-                        $njs.event.preventDefault(ev);
-                        $njs.event.stopPropagation(ev);
+                        this.preventDefault(ev);
+                        this.stopPropagation(ev);
                     }
                 }
             }
