@@ -23,14 +23,23 @@ var $njs =
                         continue;
                     else 
                         if (options[name] != undefined) 
-                        {
-                            target[name] = options[name];
-                        }
+							target[name] = options[name];
         
         return target;
     }
 };
+(function()
+{
+	var div = document.createElement("div");
+	div.innerHTML = "<a href='#' style='color:red;opacity:0.5'>";
+	a = div.getElementsByTagName("a")[0];
 
+	$njs.support = 
+	{
+		style : /red/.test(a.getAttribute("style")),
+		opacity : a.style.opacity == "0.5"
+	}
+})();
 $njs.browser = 
 {
     version: (navigator.userAgent.toLowerCase().match(/.+(?:rv|it|ra|ie)[\/: ]([\d.]+)/) || [])[1],
@@ -225,7 +234,7 @@ $njs.extend($njs,
             if (ele.tagName && name == "opacity") 
             {
             
-                if ($njs.browser.msie) 
+                if (!$njs.support.opacity) 
                 {
                     if (value) 
                     {
@@ -236,12 +245,18 @@ $njs.extend($njs,
                     
                     return ele.filter && ele.filter.indexOf("opacity=") >= 0 ? (parseFloat(ele.filter.match(/opacity=([^)]*)/)[1]) / 100) + '' : "";
                 }
+				/*
                 else 
                     if ($njs.browser.mozilla) 
                     {
                         name = "MozOpacity";
                     }
+				*/
             }
+			
+			if(name=="style" && !$njs.support.style)
+				return this.attr(ele.style , "cssText" , value);
+
             if (value) 
                 ele[name] = value;
             return ele[name];
@@ -450,10 +465,8 @@ $njs.extend($njs,
             if (events) 
             {
                 if (type == undefined) 
-                {
-                    for (var type in events) 
+					for (var type in events) 
                         this.remove(elem, type);
-                }
                 else 
                 {
                     var handles = events[type], name;
