@@ -28,6 +28,12 @@
 \[(?:[^"']*?|(?:(["'])(?:[^"'\\]*|\\[^ux]|\\u.{4}|\\x.{2}|\\[^ux])*?["']))*?\]
 </pre>
   <div id="clickme" onclick="LOG('native click is fired');">CLICK ME</div>
+  <div>2</div>
+  <div>3</div>
+  <div>4</div>
+  <div>5</div>
+  <div>6</div>
+  <div>7</div>
   <pre id="output" style="border:1px solid red;width:100%;margin-top:10px;font-family:Verdana"></pre>
 
    <SCRIPT LANGUAGE="JavaScript">
@@ -49,8 +55,14 @@
 	//$njs.event.trigger(document.getElementById("clickme") , "click"  );
 	//$njs.event.remove(document.getElementById("clickme") , "click" ,func );
 	//alert($njs.element.find("div").length);
-	 new $njs.element.Selector("a>b >c> d>e:not([name=xxxxnot]) a[name=he][name=\"hel\"][ name = hello ][ name ='ssss' ] a.class.class E:nth-child(n):nth-last-child(n):nth-of-type(n):nth-last-of-type(n):root:first-child:last-child:first-of-type:last-of-type:only-child:only-of-type:empty:link:visited:active:hover:focus:target:enabled:disabled:checked")//.find();
+	 //new $njs.element.Selector("a>b >c> d>e:not([name=xxxxnot]) a[name|=he][name=\"hel\"][ name = hello ][ name ='ssss' ] a.class.class E:nth-child(n):nth-last-child(n):nth-of-type(n):nth-last-of-type(n):root:first-child:last-child:first-of-type:last-of-type:only-child:only-of-type:empty:link:visited:active:hover:focus:target:enabled:disabled:checked")//.find();
 	 //new $njs.element.Selector("a>b >c> d>e a[name=he][name=\"hel\"][ name = hello ][ name ='ssss' ] a.class.class E:nth-child(n):nth-last-child(n):nth-of-type(n):nth-last-of-type(n):root:first-child:last-child:first-of-type:last-of-type:only-child:only-of-type:empty:link:visited:active:hover:focus:target:enabled:disabled:checked")//.find();
+
+	 new $njs.element.Selector("E:nth-child(2n + 1)");
+	 new $njs.element.Selector("E:nth-child(+2n)");
+	 new $njs.element.Selector("E:nth-child(-2)");
+	 new $njs.element.Selector("E:nth-child(odd)");
+     new $njs.element.Selector("E:nth-child(even)");
   </SCRIPT>
  </BODY>
 </HTML>
