@@ -140,9 +140,7 @@ $njs.extend($njs,
             if (arguments.length == 2) 
             {
                 if (!$njs.element.hasClass(ele, name)) 
-                {
-                    ele.className = ele.className + " " + name;
-                }
+					ele.className = ele.className + " " + name;
             }
             else 
                 for (var i = 1; i < arguments.length; i++) 
@@ -245,13 +243,6 @@ $njs.extend($njs,
                     
                     return ele.filter && ele.filter.indexOf("opacity=") >= 0 ? (parseFloat(ele.filter.match(/opacity=([^)]*)/)[1]) / 100) + '' : "";
                 }
-				/*
-                else 
-                    if ($njs.browser.mozilla) 
-                    {
-                        name = "MozOpacity";
-                    }
-				*/
             }
 			
 			if(name=="style" && !$njs.support.style)
@@ -573,7 +564,7 @@ $njs.extend($njs.ajax = {},
         xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
         xhr.onreadystatechange = function()
         {
-            if (xhr.readyState == 4) 
+            if (xhr.readyState == 4)
             {
             
                 if ($njs.ajax.httpSuccess(xhr)) 
