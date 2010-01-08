@@ -13,30 +13,26 @@
 		t = t.replace(/\\/g, '\\\\');
 		t = t.replace(/\n/g, '\\n');
 		t = t.replace(/"/g, '\\"');
-		return "_OUT.Write(\"" + t + "\");";
+		return "_Write(\"" + t + "\");";
 	}
 	var wrapFunction = function(t)
 	{
-		return t.charAt(0) == "="? "_OUT.Write(" + t.substr(1) + ");" : t;
+		return t.charAt(0) == "="? "_Write(" + t.substr(1) + ");" : t;
 	}
 	var _newT = function(func)
 	{
 		this.process = function(data)
 		{
 			var arr = [];
-			var _OUT = 
-			{
-				Write : function(t){arr.push(t);}
-			}
-			func(_OUT , data);
+			var _Write = function(t){arr.push(t);};
+			func(_Write , data);
 			return arr.join("");
 		}
 	}
-    var parse = function(text)
+    var parse = function(text,beginTag,endTag)
 	{
-		var l = 0;
-		var n , nn , r = ["function(_OUT,_CONTEXT){with(_CONTEXT){"];
-		while((n = text.indexOf("<#",l)) != -1 && (nn = text.indexOf("#>",n)) != -1)
+		var l = 0 , n , nn , r = ["function(_Write,_CONTEXT){with(_CONTEXT){"] , beginTag = beginTag || "<#" , endTag = endTag || "#>";
+		while((n = text.indexOf(beginTag,l)) != -1 && (nn = text.indexOf(endTag,n)) != -1)
 		{
 			r.push(wrapText(text.substring(l,n)));
 			r.push(wrapFunction(text.substring(n + 2,nn)));
@@ -49,9 +45,9 @@
 	}
 	window.EasyTemplate =
 	{
-		parse : function(text)
+		parse : function(text , beginTag , endTag)
 		{
-			return new _newT(parse(text));
+			return new _newT(parse(text, beginTag , endTag));
 		}
 	}
 })();
